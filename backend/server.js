@@ -1,15 +1,22 @@
 const express = require('express');
+const apiRoutes = require('./routes/api');
 const cors = require('cors');
-const app = express();
+const mongoose = require('mongoose');
+require('dotenv').config();
 
+const app = express();
 app.use(cors());
 app.use(express.json());
 
-app.get('/', (req, res) => {
-  res.send('Agri-AI Backend is Running!');
+// Database Connection
+mongoose.connect(process.env.MONGO_URI, {
+  serverSelectionTimeoutMS: 5000 // 5 second mein timeout hoga agar connect nahi hua
+})
+.then(() => console.log("Database connected successfully!"))
+.catch(err => {
+  console.error("Connection Error Details:", err.message);
 });
 
-const PORT = 5000;
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
-});
+app.use('/api', apiRoutes);
+
+app.listen(5000, () => console.log("Server running on port 5000"));
